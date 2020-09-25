@@ -7,7 +7,7 @@
 2. jsonファイルからグラフ作成
     1. ローカルのjsonを読み込んでグラフ描画 (作業中)
         - ローカルにjsonを配置 (json/sample.json) (済)
-        - ローカルからjsonを読み込む設定を追加 (済)
+        - ローカルからjsonを読み込む設定を pubspec.yaml に追加 (済)
         - jsonをパース
         - jsonからグラフを描く
         - 各grid内でグラフ描画用classを呼び出す
