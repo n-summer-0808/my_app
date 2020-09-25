@@ -1,56 +1,88 @@
 import 'package:flutter/material.dart';
-import 'package:english_words/english_words.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  runApp(App());
+}
 
-class MyApp extends StatelessWidget {
+class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final title = 'poi-view';
     return MaterialApp(
-      title: 'Startup Name Generator',
-      home: RandomWords(),
+      theme: ThemeData(
+          brightness: Brightness.light, primaryColor: Colors.blueGrey),
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text(title),
+        ),
+        body: Container(
+          child: Column(
+            children: <Widget>[
+              Container(
+                height: 100, // 縦幅
+                child: ChangeForm(),
+              ),
+              PoiView(),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
 
-class RandomWords extends StatefulWidget {
+class PoiView extends StatefulWidget {
   @override
-  _RandomWordsState createState() => _RandomWordsState();
+  _PoiViewState createState() => _PoiViewState();
 }
 
-class _RandomWordsState extends State<RandomWords> {
-  final _suggestions = <WordPair>[];
-  final _biggerFont = TextStyle(fontSize: 18.0);
-  @override
+class _PoiViewState extends State<PoiView> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Startup Name Generator'),
+    return Flexible(
+      child: GridView.count(
+        crossAxisCount: 2,
+        children: List.generate(50, (index) {
+          return Center(
+            child: Text(
+              'Item $index',
+              style: Theme.of(context).textTheme.headline5,
+            ),
+          );
+        }),
       ),
-      body: _buildSuggestions(),
     );
   }
+}
 
-  Widget _buildSuggestions() {
-    return ListView.builder(
-        padding: EdgeInsets.all(16.0),
-        itemBuilder: /*1*/ (context, i) {
-          if (i.isOdd) return Divider(); /*2*/
+class ChangeForm extends StatefulWidget {
+  @override
+  _ChangeFormState createState() => _ChangeFormState();
+}
 
-          final index = i ~/ 2; /*3*/
-          if (index >= _suggestions.length) {
-            _suggestions.addAll(generateWordPairs().take(10)); /*4*/
-          }
-          return _buildRow(_suggestions[index]);
-        });
+class _ChangeFormState extends State<ChangeForm> {
+  String _defaultValue = '嵐山エリア';
+  List<String> _list = <String>['嵐山エリア', '祇園エリア', '奈良エリア'];
+  String _text = '';
+
+  void _handleChange(String newValue) {
+    setState(() {
+      _text = newValue;
+      _defaultValue = newValue;
+    });
   }
 
-  Widget _buildRow(WordPair pair) {
-    return ListTile(
-      title: Text(
-        pair.asPascalCase,
-        style: _biggerFont,
+  Widget build(BuildContext context) {
+    return Center(
+      child: DropdownButton<String>(
+        value: _defaultValue,
+        onChanged: _handleChange,
+        items: _list.map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
       ),
     );
   }
