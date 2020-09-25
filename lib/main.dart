@@ -50,11 +50,11 @@ class _PoiViewState extends State<PoiView> {
         crossAxisCount: 2,
         children: List.generate(50, (index) {
           return Center(
-            child: MyHomePage(),
-            // child: Text(
-            //   'Item $index',
-            //   style: Theme.of(context).textTheme.headline5,
-            // ),
+            //child: MyHomePage(),
+            child: Text(
+              'Item $index',
+              style: Theme.of(context).textTheme.headline5,
+            ),
           );
         }),
       ),
@@ -96,22 +96,22 @@ class _ChangeFormState extends State<ChangeForm> {
   }
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  String _data = "Load JSON Data";
+// class _MyHomePageState extends State<MyHomePage> {
+//   String _data = "Load JSON Data";
 
-  void _updateJsonData() {
-    setState(() {
-      loadJsonAsset();
-    });
-  }
+//   void _updateJsonData() {
+//     setState(() {
+//       loadJsonAsset();
+//     });
+//   }
 
-  Future<void> loadJsonAsset() async {
-    _data = "";
-    String loadData = await rootBundle.loadString('json/data.json');
-    final jsonResponse = json.decode(loadData);
-    jsonResponse.forEach((key, value) => _data = _data + '$key: $value \x0A');
-  }
-}
+//   Future<void> loadJsonAsset() async {
+//     _data = "";
+//     String loadData = await rootBundle.loadString('json/data.json');
+//     final jsonResponse = json.decode(loadData);
+//     jsonResponse.forEach((key, value) => _data = _data + '$key: $value \x0A');
+//   }
+// }
 
 class ExportGraph extends StatefulWidget {
   @override
