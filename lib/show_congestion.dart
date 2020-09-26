@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 
 class ShowPoICongestion extends StatelessWidget {
   final String areaName;
@@ -10,18 +9,30 @@ class ShowPoICongestion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // タイトル表示用の設定(実装がダサい)
+    String title;
+    switch (areaName) {
+      case 'arashiyama':
+        title = '嵐山エリア';
+        break;
+      case 'gion':
+        title = '祇園エリア';
+        break;
+      case 'nara':
+        title = '奈良エリア';
+        break;
+      default:
+        title = '';
+        break;
+    }
+
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text(areaName), // アプリ最上部のタイトル表示
+          title: Text(title), // アプリ最上部のタイトル表示
         ),
         body: Container(
-          child: Column(
-            // 複数のwidgetを縦に配置
-            children: <Widget>[
-              PoiView(areaName), // グラフ表示を配置
-            ],
-          ),
+          child: PoiView(areaName), // グラフ表示を配置
         ),
       ),
     );
@@ -53,16 +64,34 @@ class _PoiViewState extends State<PoiView> {
         // 非同期処理が完了している場合，Flexibleなviewを表示
         if (snapshot.hasData) {
           Map<String, dynamic> json = snapshot.data;
-          return Flexible(
-            child: GridView.count(
-              crossAxisCount: 2,
-              children: List.generate(json['poi'].length, (index) {
-                return Center(
-                  child: InsideGrid(poiData: json['poi'][index]),
-                );
-              }),
+          return Column(children: <Widget>[
+            ConstrainedBox(
+              // 天候表示
+              constraints: BoxConstraints.expand(height: 70),
+              child: Container(
+                color: Colors.lightBlue,
+                // child: WeatherIcon(
+                //   weather: json['area-info']['weather'],
+                // ),
+                child: Text(
+                  "天気 : " + json['area-info']['weather'],
+                ),
+              ),
             ),
-          );
+            Container(
+              // グラフ表示
+              child: Flexible(
+                child: GridView.count(
+                  crossAxisCount: 2,
+                  children: List.generate(json['poi'].length, (index) {
+                    return Center(
+                      child: InsideGrid(poiData: json['poi'][index]),
+                    );
+                  }),
+                ),
+              ),
+            ),
+          ]);
 
           // 非同期処理が未完了の場合はインジケータを表示する
         } else {
@@ -78,6 +107,43 @@ Future<Map<String, dynamic>> getJson(String url) async {
   var response = await http.get(url);
   final jsonResponse = json.decode(response.body);
   return jsonResponse;
+}
+
+/////////
+//以下天気アイコン表示処理(作り中,未反映)
+/////////
+class WeatherIcon extends StatefulWidget {
+  final String weather;
+  WeatherIcon({this.weather});
+  @override
+  _WeatherIconState createState() => _WeatherIconState();
+}
+
+class _WeatherIconState extends State<WeatherIcon> {
+  final String weather;
+  _WeatherIconState({this.weather});
+  @override
+  Widget build(BuildContext context) {
+    Icon weatherIcon;
+    switch (weather) {
+      case 'sunny':
+        weatherIcon = Icon(Icons.wb_sunny);
+        break;
+      case 'rain':
+        weatherIcon = Icon(Icons.place);
+        break;
+      case 'cloudy':
+        weatherIcon = Icon(Icons.wb_cloudy);
+        break;
+      default:
+        weatherIcon = Icon(Icons.wb_cloudy);
+        break;
+    }
+    if (weather.compareTo('sunny') == 0) {
+      weatherIcon = Icon(Icons.wb_sunny);
+    }
+    return weatherIcon;
+  }
 }
 
 /////////
