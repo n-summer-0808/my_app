@@ -132,14 +132,13 @@ class _InsideGridState extends State<InsideGrid> {
   _InsideGridState({this.poiData}); //コンストラクタ
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        child: Column(children: <Widget>[
-          PoiGraph(poiData: poiData), // グラフ
-          Text(poiData['name']), // 場所名
-        ]),
+    return Column(children: <Widget>[
+      Text(poiData['name']), // 場所名
+      Flexible(
+        flex: 3,
+        child: PoiGraph(poiData: poiData), // グラフ
       ),
-    );
+    ]);
   }
 }
 
@@ -157,9 +156,17 @@ class _PoiGraphState extends State<PoiGraph> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text((poiData['congestion']['12']).toString()),
+      child: SimpleTimeSeriesChart.withSampleData(), // サンプルデータでグラフ描画
     );
   }
+}
+
+// グラフ描画用のデータ型を定義
+class PoiSeriesTime {
+  final DateTime time; // 時間
+  final int poi; // point of interest
+
+  PoiSeriesTime(this.time, this.poi);
 }
 
 class SimpleTimeSeriesChart extends StatelessWidget {
@@ -176,37 +183,6 @@ class SimpleTimeSeriesChart extends StatelessWidget {
       animate: false,
     );
   }
-
-  // EXCLUDE_FROM_GALLERY_DOCS_START
-  // This section is excluded from being copied to the gallery.
-  // It is used for creating random series data to demonstrate animation in
-  // the example app only.
-  factory SimpleTimeSeriesChart.withRandomData() {
-    return new SimpleTimeSeriesChart(_createRandomData());
-  }
-
-  /// Create random data.
-  static List<charts.Series<TimeSeriesSales, DateTime>> _createRandomData() {
-    final random = new Random();
-
-    final data = [
-      new TimeSeriesSales(new DateTime(2017, 9, 19), random.nextInt(100)),
-      new TimeSeriesSales(new DateTime(2017, 9, 26), random.nextInt(100)),
-      new TimeSeriesSales(new DateTime(2017, 10, 3), random.nextInt(100)),
-      new TimeSeriesSales(new DateTime(2017, 10, 10), random.nextInt(100)),
-    ];
-
-    return [
-      new charts.Series<TimeSeriesSales, DateTime>(
-        id: 'Sales',
-        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-        domainFn: (TimeSeriesSales sales, _) => sales.time,
-        measureFn: (TimeSeriesSales sales, _) => sales.sales,
-        data: data,
-      )
-    ];
-  }
-  // EXCLUDE_FROM_GALLERY_DOCS_END
 
   @override
   Widget build(BuildContext context) {
