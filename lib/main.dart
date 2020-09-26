@@ -70,12 +70,7 @@ class _PoiViewState extends State<PoiView> {
               crossAxisCount: 2,
               children: List.generate(json['poi'].length, (index) {
                 return Center(
-                  //child: MyHomePage(),
-                  child: Text(
-                    // 'Item $index',
-                    json['poi'][index]['name'],
-                    style: Theme.of(context).textTheme.headline5,
-                  ),
+                  child: InsideGrid(poiData: json['poi'][index]),
                 );
               }),
             ),
@@ -124,32 +119,46 @@ class _ChangeFormState extends State<ChangeForm> {
   }
 }
 
-// class _MyHomePageState extends State<MyHomePage> {
-//   String _data = "Load JSON Data";
-
-//   void _updateJsonData() {
-//     setState(() {
-//       loadJsonAsset();
-//     });
-//   }
-
-//   Future<void> loadJsonAsset() async {
-//     _data = "";
-//     String loadData = await rootBundle.loadString('json/data.json');
-//     final jsonResponse = json.decode(loadData);
-//     jsonResponse.forEach((key, value) => _data = _data + '$key: $value \x0A');
-//   }
-// }
-
-class ExportGraph extends StatefulWidget {
+// グリッド内表示の生成
+class InsideGrid extends StatefulWidget {
+  final Map<String, dynamic> poiData; //上位Widgetから受け取りたいデータ
+  InsideGrid({this.poiData}); //コンストラクタ
   @override
-  _ExportGraphState createState() => _ExportGraphState();
+  _InsideGridState createState() => _InsideGridState(poiData: poiData);
 }
 
-class _ExportGraphState extends State<ExportGraph> {
+class _InsideGridState extends State<InsideGrid> {
+  final Map<String, dynamic> poiData; //上位Widgetから受け取りたいデータ
+  _InsideGridState({this.poiData}); //コンストラクタ
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      body: Container(
+        child: Column(children: <Widget>[
+          PoiGraph(poiData: poiData), // グラフ
+          Text(poiData['name']), // 場所名
+        ]),
+      ),
+    );
+  }
+}
+
+// グラフ描画
+class PoiGraph extends StatefulWidget {
+  final Map<String, dynamic> poiData;
+  PoiGraph({this.poiData});
+  @override
+  _PoiGraphState createState() => _PoiGraphState(poiData: poiData);
+}
+
+class _PoiGraphState extends State<PoiGraph> {
+  final Map<String, dynamic> poiData;
+  _PoiGraphState({this.poiData});
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text((poiData['congestion']['12']).toString()),
+    );
   }
 }
 
