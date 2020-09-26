@@ -31,6 +31,8 @@ dependencies:
   charts_flutter: ^0.9.0
   json_serializable: ^3.3.0
   json_annotation: ^3.0.1
+  http: ^0.12.2
+
 
 dev_dependencies:
   flutter_test:

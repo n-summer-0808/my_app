@@ -3,13 +3,23 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'dart:math';
 import 'dart:convert';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:json_annotation/json_annotation.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   // アプリ起動時にmainが呼び出される
-  runApp(App()); // Appを呼ぶ
+  runApp(MyApp()); // Appを呼ぶ
 }
 
-class App extends StatelessWidget {
+// 自前のAPIサーバーからjsonファイルを取得
+Future<Map<String, dynamic>> get_json(String url) async {
+  var response = await http.get(url);
+  String _data = '';
+  final jsonResponse = json.decode(response.body);
+  return jsonResponse;
+}
+
+class MyApp extends StatelessWidget {
   // mainから呼ばれる
   @override
   Widget build(BuildContext context) {
@@ -45,19 +55,37 @@ class PoiView extends StatefulWidget {
 class _PoiViewState extends State<PoiView> {
   @override
   Widget build(BuildContext context) {
-    return Flexible(
-      child: GridView.count(
-        crossAxisCount: 2,
-        children: List.generate(50, (index) {
-          return Center(
-            //child: MyHomePage(),
-            child: Text(
-              'Item $index',
-              style: Theme.of(context).textTheme.headline5,
+    String url = 'https://m1-go.herokuapp.com/congestion';
+
+    // 非同期処理用のBuiderを呼び出し
+    return FutureBuilder(
+      future: get_json(url),
+      builder: (context, snapshot) {
+        // 非同期処理が完了している場合，Flexibleなviewを表示
+        if (snapshot.hasData) {
+          Map<String, dynamic> json = snapshot.data;
+          // print(json);
+          return Flexible(
+            child: GridView.count(
+              crossAxisCount: 2,
+              children: List.generate(json['poi'].length, (index) {
+                return Center(
+                  //child: MyHomePage(),
+                  child: Text(
+                    // 'Item $index',
+                    json['poi'][index]['name'],
+                    style: Theme.of(context).textTheme.headline5,
+                  ),
+                );
+              }),
             ),
           );
-        }),
-      ),
+
+          // 非同期処理が未完了の場合はインジケータを表示する
+        } else {
+          return Center(child: CircularProgressIndicator());
+        }
+      },
     );
   }
 }
