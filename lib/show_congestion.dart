@@ -4,22 +4,22 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
-class Show_PoI_Congestion extends StatelessWidget {
-  final String area_name;
-  Show_PoI_Congestion(this.area_name);
+class ShowPoICongestion extends StatelessWidget {
+  final String areaName;
+  ShowPoICongestion(this.areaName);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text(area_name), // アプリ最上部のタイトル表示
+          title: Text(areaName), // アプリ最上部のタイトル表示
         ),
         body: Container(
           child: Column(
             // 複数のwidgetを縦に配置
             children: <Widget>[
-              PoiView(area_name), // グラフ表示を配置
+              PoiView(areaName), // グラフ表示を配置
             ],
           ),
         ),
@@ -29,16 +29,16 @@ class Show_PoI_Congestion extends StatelessWidget {
 }
 
 class PoiView extends StatefulWidget {
-  final String area_name;
-  PoiView(this.area_name);
+  final String areaName;
+  PoiView(this.areaName);
 
   @override
-  _PoiViewState createState() => _PoiViewState(area_name);
+  _PoiViewState createState() => _PoiViewState(areaName);
 }
 
 class _PoiViewState extends State<PoiView> {
-  final String area_name;
-  _PoiViewState(this.area_name);
+  final String areaName;
+  _PoiViewState(this.areaName);
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +48,7 @@ class _PoiViewState extends State<PoiView> {
 
     // TODO ページ全体が読み込まれたタイミングでhttpリクエストを送信するように切り替える
     return FutureBuilder(
-      future: get_json(url),
+      future: getJson(url),
       builder: (context, snapshot) {
         // 非同期処理が完了している場合，Flexibleなviewを表示
         if (snapshot.hasData) {
@@ -74,7 +74,7 @@ class _PoiViewState extends State<PoiView> {
 }
 
 // 自前のAPIサーバーからjsonファイルを取得
-Future<Map<String, dynamic>> get_json(String url) async {
+Future<Map<String, dynamic>> getJson(String url) async {
   var response = await http.get(url);
   final jsonResponse = json.decode(response.body);
   return jsonResponse;
@@ -93,8 +93,8 @@ class InsideGrid extends StatefulWidget {
 }
 
 class _InsideGridState extends State<InsideGrid> {
-  final Map<String, dynamic> poiData; //上位Widgetから受け取りたいデータ
-  _InsideGridState({this.poiData}); //コンストラクタ
+  final Map<String, dynamic> poiData;
+  _InsideGridState({this.poiData});
   @override
   Widget build(BuildContext context) {
     return Column(children: <Widget>[
@@ -121,8 +121,8 @@ class _PoiGraphState extends State<PoiGraph> {
   @override
   Widget build(BuildContext context) {
     return Center(
-        // child: SimpleTimeSeriesChart.withSampleData(), // サンプルデータでグラフ描画
-        );
+      child: SimpleTimeSeriesChart.withSampleData(), // サンプルデータでグラフ描画
+    );
   }
 }
 

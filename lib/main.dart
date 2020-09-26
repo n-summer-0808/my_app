@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 
+import 'top.dart';
 import 'show_congestion.dart';
 
-Map<String, dynamic> json_congestoin = {};
+Map<String, dynamic> jsonCongestion = {};
 
 void main() {
   runApp(new MaterialApp(
@@ -14,9 +11,10 @@ void main() {
     routes: <String, WidgetBuilder>{
       '/': (_) => new Splash(),
       // '/': (_) => new Top(),  //エリア選択画面
-      '/arashiyama': (_) => new Show_PoI_Congestion('arashiyama'),
-      '/gion': (_) => new Show_PoI_Congestion('gion'),
-      '/nara': (_) => new Show_PoI_Congestion('nara'),
+      '/top': (_) => new Top(),
+      '/arashiyama': (_) => new ShowPoICongestion('arashiyama'),
+      '/gion': (_) => new ShowPoICongestion('gion'),
+      '/nara': (_) => new ShowPoICongestion('nara'),
     },
   ));
 }
@@ -46,7 +44,6 @@ class _SplashState extends State<Splash> {
   }
 
   void handleTimeout() {
-    // TODO 選択画面の実装（現時点では嵐山に遷移）
-    Navigator.of(context).pushReplacementNamed("/arashiyama");
+    Navigator.of(context).pushReplacementNamed("/top");
   }
 }
