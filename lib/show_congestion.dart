@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:http/http.dart' as http;
+import 'weather_icons_icons.dart';
 
 class ShowPoICongestion extends StatelessWidget {
   final String areaName;
@@ -66,18 +67,24 @@ class _PoiViewState extends State<PoiView> {
           Map<String, dynamic> json = snapshot.data;
           return Column(children: <Widget>[
             ConstrainedBox(
-              // 天候表示
-              constraints: BoxConstraints.expand(height: 70),
-              child: Container(
-                color: Colors.lightBlue,
-                // child: WeatherIcon(
-                //   weather: json['area-info']['weather'],
-                // ),
-                child: Text(
-                  "天気 : " + json['area-info']['weather'],
-                ),
-              ),
-            ),
+                // 天候表示
+                constraints: BoxConstraints.expand(height: 80),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'current weather : ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[800],
+                        fontSize: 20.0,
+                      ),
+                    ),
+                    WeatherIcon(
+                      weather: json['area-info']['weather'],
+                    ),
+                  ],
+                )),
             Container(
               // グラフ表示
               child: Flexible(
@@ -116,7 +123,7 @@ class WeatherIcon extends StatefulWidget {
   final String weather;
   WeatherIcon({this.weather});
   @override
-  _WeatherIconState createState() => _WeatherIconState();
+  _WeatherIconState createState() => _WeatherIconState(weather: weather);
 }
 
 class _WeatherIconState extends State<WeatherIcon> {
@@ -127,20 +134,33 @@ class _WeatherIconState extends State<WeatherIcon> {
     Icon weatherIcon;
     switch (weather) {
       case 'sunny':
-        weatherIcon = Icon(Icons.wb_sunny);
-        break;
-      case 'rain':
-        weatherIcon = Icon(Icons.place);
+        weatherIcon = Icon(
+          WeatherIcons.sun,
+          color: Colors.orange[700],
+          size: 50.0,
+        );
         break;
       case 'cloudy':
-        weatherIcon = Icon(Icons.wb_cloudy);
+        weatherIcon = Icon(
+          WeatherIcons.cloud,
+          color: Colors.grey[800],
+          size: 50.0,
+        );
+        break;
+      case 'rainy':
+        weatherIcon = Icon(
+          WeatherIcons.rain,
+          color: Colors.blue[700],
+          size: 50.0,
+        );
         break;
       default:
-        weatherIcon = Icon(Icons.wb_cloudy);
+        weatherIcon = Icon(
+          WeatherIcons.cloud_sun,
+          color: Colors.pink,
+          size: 50.0,
+        );
         break;
-    }
-    if (weather.compareTo('sunny') == 0) {
-      weatherIcon = Icon(Icons.wb_sunny);
     }
     return weatherIcon;
   }

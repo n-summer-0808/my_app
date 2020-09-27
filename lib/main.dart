@@ -10,7 +10,6 @@ void main() {
     title: 'Navigation with Routes',
     routes: <String, WidgetBuilder>{
       '/': (_) => new Splash(),
-      // '/': (_) => new Top(),  //エリア選択画面
       '/top': (_) => new Top(),
       '/arashiyama': (_) => new ShowPoICongestion('arashiyama'),
       '/gion': (_) => new ShowPoICongestion('gion'),
