@@ -54,14 +54,16 @@ class _PoiViewState extends State<PoiView> {
   @override
   Widget build(BuildContext context) {
     // TODO API側のルーティングを実装した後，url+=のコメントアウトを削除
-    String url = 'https://m1-go.herokuapp.com/congestion';
-    // url += area_name;
+    String url = 'https://m1-go.herokuapp.com/congestion/';
+    String lat = '35';
+    String lng = '135';
+    url += 'areaname=' + areaName + '&lat=' + lat + '&lng=' + lng;
 
     // TODO ページ全体が読み込まれたタイミングでhttpリクエストを送信するように切り替える
     return FutureBuilder(
       future: getJson(url),
       builder: (context, snapshot) {
-        // 非同期処理が完了している場合，Flexibleなviewを表示
+        // 非同期処理が完了している場合，天気と混雑度グラフを表示
         if (snapshot.hasData) {
           Map<String, dynamic> json = snapshot.data;
           return Column(children: <Widget>[
