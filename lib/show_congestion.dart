@@ -135,21 +135,16 @@ class _WeatherIconState extends State<WeatherIcon> {
   Widget build(BuildContext context) {
     Icon weatherIcon;
     switch (weather) {
-      case 'sunny':
+      case 'Clear':
         weatherIcon = Icon(
           WeatherIcons.sun,
           color: Colors.orange[700],
           size: 50.0,
         );
         break;
-      case 'cloudy':
-        weatherIcon = Icon(
-          WeatherIcons.cloud,
-          color: Colors.grey[800],
-          size: 50.0,
-        );
-        break;
-      case 'rainy':
+      case 'Rain':
+      case 'Drizzle':
+      case 'Thunderstorm':
         weatherIcon = Icon(
           WeatherIcons.rain,
           color: Colors.blue[700],
@@ -158,8 +153,8 @@ class _WeatherIconState extends State<WeatherIcon> {
         break;
       default:
         weatherIcon = Icon(
-          WeatherIcons.cloud_sun,
-          color: Colors.pink,
+          WeatherIcons.cloud,
+          color: Colors.grey[800],
           size: 50.0,
         );
         break;

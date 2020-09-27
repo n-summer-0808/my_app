@@ -34,6 +34,7 @@ dependencies:
   http: ^0.12.2
   provider: ^4.3.0
   weather_icons: ^2.0.1
+  flutter_native_splash: ^0.1.9
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +65,10 @@ flutter:
     - family:  WeatherIcons
       fonts:
         - asset: fonts/WeatherIcons.ttf
+
+flutter_native_splash:
+  image: assets/images/logo_ubi.png
+  color: "42a5f5"
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
