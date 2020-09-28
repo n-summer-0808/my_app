@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
-import 'package:charts_flutter/flutter.dart' as charts;
+// import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:http/http.dart' as http;
 import 'weather_icons_icons.dart';
 
@@ -59,6 +60,7 @@ class _PoiViewState extends State<PoiView> {
     String lat = '35';
     String lng = '135';
     url += 'areaname=' + areaName + '&lat=' + lat + '&lng=' + lng;
+    print(url);
 
     // TODO ページ全体が読み込まれたタイミングでhttpリクエストを送信するように切り替える
     return FutureBuilder(
@@ -205,148 +207,51 @@ class _PoiGraphState extends State<PoiGraph> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: CongestionDataChart.withPoIData(poiData),
+      child: CongestionDataChart(poiData),
+      // child: CongestionDataChart.withPoIData(poiData),
     );
   }
 }
 
-/// 混雑度をSparkなグラフで描画
 class CongestionDataChart extends StatelessWidget {
-  final List<charts.Series> seriesList;
-  final bool animate;
-
-  CongestionDataChart(this.seriesList, {this.animate});
-
-  factory CongestionDataChart.withPoIData(Map<String, dynamic> poiData) {
-    return new CongestionDataChart(
-      _createPoIData(poiData),
-      animate: false,
-    );
-  }
+  final Map<String, dynamic> poiData;
+  CongestionDataChart(this.poiData);
 
   @override
   Widget build(BuildContext context) {
-    return new charts.BarChart(
-      seriesList,
-      animate: animate,
-
-      /// Assign a custom style for the measure axis.
-      ///
-      /// The NoneRenderSpec only draws an axis line (and even that can be hidden
-      /// with showAxisLine=false).
-      primaryMeasureAxis: new charts.NumericAxisSpec(
-        renderSpec: new charts.NoneRenderSpec(),
-        showAxisLine: true,
-      ),
-
-      /// This is an OrdinalAxisSpec to match up with BarChart's default
-      /// ordinal domain axis (use NumericAxisSpec or DateTimeAxisSpec for
-      /// other charts).
-      domainAxis: new charts.OrdinalAxisSpec(
-        // Make sure that we draw the domain axis line.
-        showAxisLine: true,
-        // viewport: charts.OrdinalViewport("10", 100)
-        // renderSpec: new charts.NoneRenderSpec()
-      ),
-
-      // With a spark chart we likely don't want large chart margins.
-      // 1px is the smallest we can make each margin.
-      layoutConfig: new charts.LayoutConfig(
-        leftMarginSpec: new charts.MarginSpec.fixedPixel(0),
-        topMarginSpec: new charts.MarginSpec.fixedPixel(0),
-        rightMarginSpec: new charts.MarginSpec.fixedPixel(0),
-        // bottomMarginSpec: new charts.MarginSpec.fixedPixel(1)
-      ),
-    );
-  }
-
-  /// グラフ描画に使用するデータ生成
-  static List<charts.Series<CongestionData, String>> _createPoIData(
-      Map<String, dynamic> poiData) {
-    List<CongestionData> data = [];
+    final List<CongestionData> chartData = [];
 
     poiData["congestion"].forEach((key, value) {
       int hour = int.parse(key);
-      charts.Color barColor = charts.ColorUtil.fromDartColor(Colors.blue);
+      Color color = Color.fromRGBO(169, 169, 169, 1);
       if (hour >= 10 && hour <= 18) {
-        print(value);
-        if (hour == 14) {
-          // TODO ユーザの現在時刻に合わせて強調（現在はデモ用に14時固定）
-          barColor = charts.ColorUtil.fromDartColor(Colors.red);
+        if (hour == 12) {
+          color = Color.fromRGBO(255, 0, 102, 1);
         }
-        data.add(new CongestionData(key, value, barColor));
+        chartData.add(new CongestionData(double.parse(key), value, color));
       }
     });
 
-    return [
-      new charts.Series<CongestionData, String>(
-        id: 'hour',
-        domainFn: (CongestionData series, _) => series.hour,
-        measureFn: (CongestionData series, _) => series.points,
-        colorFn: (CongestionData series, _) => series.barColor,
-        data: data,
-      ),
-    ];
+    return Scaffold(
+        body: Center(
+            child: Container(
+                child: SfCartesianChart(
+                    primaryXAxis:
+                        NumericAxis(visibleMinimum: 9, visibleMaximum: 20),
+                    primaryYAxis: NumericAxis(visibleMaximum: 100),
+                    series: <ChartSeries>[
+          ColumnSeries<CongestionData, dynamic>(
+              dataSource: chartData,
+              xValueMapper: (CongestionData points, _) => points.hour,
+              yValueMapper: (CongestionData points, _) => points.points,
+              pointColorMapper: (CongestionData points, Color) => points.color),
+        ]))));
   }
 }
 
-// 軸ありのグラフ
-// class CongestionDataChart extends StatelessWidget {
-//   final Map<String, dynamic> poiData;
-//   CongestionDataChart(this.poiData);
-
-//   // SimpleTimeSeriesChart(this.seriesList, {this.animate});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     List<CongestionData> data = [];
-
-//     poiData["congestion"].forEach((key, value) {
-//       // print(key);
-//       int hour = int.parse(key);
-//       if (hour >= 10 && hour <= 18) {
-//         data.add(new CongestionData(
-//             "1", value, charts.ColorUtil.fromDartColor(Colors.blue)));
-//       }
-//     });
-
-//     List<charts.Series<CongestionData, String>> series = [
-//       charts.Series(
-//           id: "numbers",
-//           data: data,
-//           domainFn: (CongestionData series, _) => series.hour,
-//           measureFn: (CongestionData series, _) => series.points,
-//           colorFn: (CongestionData series, _) => series.barColor)
-//     ];
-
-//     return Container(
-//       height: 400,
-//       padding: EdgeInsets.all(20),
-//       child: Card(
-//         child: Padding(
-//           padding: const EdgeInsets.all(8.0),
-//           child: Column(
-//             children: <Widget>[
-//               // Text(
-//               //   "World of Warcraft numbers by day",
-//               //   // style: Theme.of(context).textTheme.body2,
-//               // ),
-//               Expanded(
-//                 child: charts.BarChart(series, animate: true),
-//               )
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-// 棒グラフ表示用の表示用のデータ構造
 class CongestionData {
-  final String hour; //時間
-  final int points; //混雑度合い
-  final charts.Color barColor; //グラフの色
-
-  CongestionData(this.hour, this.points, this.barColor);
+  CongestionData(this.hour, this.points, this.color);
+  final double hour; // packageの仕様上，double型以外認められない
+  final int points;
+  final Color color;
 }

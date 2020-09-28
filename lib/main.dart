@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 
 import 'top.dart';
 import 'show_congestion.dart';
+import 'package:syncfusion_flutter_core/core.dart';
 
 Map<String, dynamic> jsonCongestion = {};
 
 void main() {
+  // package "syncfusion_flutter"のライセンス認証
+  SyncfusionLicense.registerLicense(
+      "NT8mJyc2IWhia31hfWN9Z2doYmN8YWt8YWNhY3NnaWFkaWNgcxIeaCcyKjJ9Njo0PH0nN2ATOiB9PTI6ICd9OSM=");
   runApp(new MaterialApp(
     title: 'Navigation with Routes',
     routes: <String, WidgetBuilder>{
