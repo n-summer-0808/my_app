@@ -205,7 +205,6 @@ class _PoiGraphState extends State<PoiGraph> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      // child: SimpleTimeSeriesChart.withSampleData(), // サンプルデータでグラフ描画
       child: CongestionDataChart.withPoIData(poiData),
     );
   }
@@ -235,25 +234,29 @@ class CongestionDataChart extends StatelessWidget {
       ///
       /// The NoneRenderSpec only draws an axis line (and even that can be hidden
       /// with showAxisLine=false).
-      primaryMeasureAxis:
-          new charts.NumericAxisSpec(renderSpec: new charts.NoneRenderSpec()),
+      primaryMeasureAxis: new charts.NumericAxisSpec(
+        renderSpec: new charts.NoneRenderSpec(),
+        showAxisLine: true,
+      ),
 
       /// This is an OrdinalAxisSpec to match up with BarChart's default
       /// ordinal domain axis (use NumericAxisSpec or DateTimeAxisSpec for
       /// other charts).
       domainAxis: new charts.OrdinalAxisSpec(
-          // Make sure that we draw the domain axis line.
-          showAxisLine: true,
-          // But don't draw anything else.
-          renderSpec: new charts.NoneRenderSpec()),
+        // Make sure that we draw the domain axis line.
+        showAxisLine: true,
+        // viewport: charts.OrdinalViewport("10", 100)
+        // renderSpec: new charts.NoneRenderSpec()
+      ),
 
       // With a spark chart we likely don't want large chart margins.
       // 1px is the smallest we can make each margin.
       layoutConfig: new charts.LayoutConfig(
-          leftMarginSpec: new charts.MarginSpec.fixedPixel(0),
-          topMarginSpec: new charts.MarginSpec.fixedPixel(0),
-          rightMarginSpec: new charts.MarginSpec.fixedPixel(0),
-          bottomMarginSpec: new charts.MarginSpec.fixedPixel(0)),
+        leftMarginSpec: new charts.MarginSpec.fixedPixel(0),
+        topMarginSpec: new charts.MarginSpec.fixedPixel(0),
+        rightMarginSpec: new charts.MarginSpec.fixedPixel(0),
+        // bottomMarginSpec: new charts.MarginSpec.fixedPixel(1)
+      ),
     );
   }
 
@@ -263,11 +266,12 @@ class CongestionDataChart extends StatelessWidget {
     List<CongestionData> data = [];
 
     poiData["congestion"].forEach((key, value) {
-      // print(key);
       int hour = int.parse(key);
       charts.Color barColor = charts.ColorUtil.fromDartColor(Colors.blue);
       if (hour >= 10 && hour <= 18) {
+        print(value);
         if (hour == 14) {
+          // TODO ユーザの現在時刻に合わせて強調（現在はデモ用に14時固定）
           barColor = charts.ColorUtil.fromDartColor(Colors.red);
         }
         data.add(new CongestionData(key, value, barColor));
@@ -276,7 +280,7 @@ class CongestionDataChart extends StatelessWidget {
 
     return [
       new charts.Series<CongestionData, String>(
-        id: 'Global Revenue',
+        id: 'hour',
         domainFn: (CongestionData series, _) => series.hour,
         measureFn: (CongestionData series, _) => series.points,
         colorFn: (CongestionData series, _) => series.barColor,
